@@ -16,6 +16,7 @@ require 'debugger'
 require 'eye_detect'
 
 GLASSES = {
+  nil => "",
   773  => "http://dahpbpalpng0r.cloudfront.net/products/773_kadoya22-1/product/4057_1_front.jpg",
   2614 => "http://dahpbpalpng0r.cloudfront.net/products/2614_jill-stuart-05-0174-2/product/9957_4_front.jpg"
 }
@@ -42,7 +43,7 @@ get '/up' do
     temp_image.resize_to_fit!(230)
     temp_image.write(output_tmp)
     `convert -fuzz 20% -transparent "#ffffff" #{output_tmp} #{output}`
-  end
+  end if @glass && @glass != ""
 
   open(@url) do |sock|
     temp = Tempfile.open(File.basename(@url))
