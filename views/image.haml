@@ -4,6 +4,7 @@
   }
   #glass {
     position: absolute;
+    z-index: 100;
   }
 
 %form{action: "/up", method: :get}
@@ -35,19 +36,22 @@
   eye   = { center_x: #{@eye.center_x}, center_y: #{@eye.center_y}}
   glass = { width: 212, height: 58 }
 
+  console.log("face[left: " + face.left + ", width: " + face.width + "]")
+  console.log("eye[center_x: " + eye.center_x + ", center_y: " + eye.center_y + "]")
+
   $photo = $("#photo")
   photo.top   = $photo.position()["top"]
   photo.left  = $photo.position()["left"]
   photo.width = $photo.width()
   photo.height= $photo.height()
 
-  console.log("photo[top: " + glass.top + ", left: " + glass.left + ", width: " + glass.width + ", height: " + glass.height + "]")
+  console.log("photo[top: " + photo.top + ", left: " + photo.left + ", width: " + photo.width + ", height: " + photo.height + "]")
 
   $glass = $("#glass")
   glass.width = face.width
   glass.scale = glass.width / $glass.width()
   glass.height= $glass.height() * glass.scale
-  glass.top   = photo.top  + eye.center_y - glass.height * 0.4
+  glass.top   = photo.top  + eye.center_y - glass.height * 0.4 # つるが上にはみ出ているせいで、画像高さがやや高く計算されてしまう問題の対策
   glass.left  = photo.left + face.left
 
   console.log("glass[top: " + glass.top + ", left: " + glass.left + ", width: " + glass.width + ", height: " + glass.height + ", scale: " + glass.scale + "]")

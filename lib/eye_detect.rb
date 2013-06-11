@@ -75,7 +75,14 @@ class EyeDetect
       min_neighbors: 3,             # 最低矩形数
       min_size: CvSize.new(10,10)   # 最小矩形
     }
-    detector.detect_objects(gray, detect_params)
+    eyes = detector.detect_objects(gray, detect_params)
+    raise "Cannot detect eyes enough" if eyes.size < 2
+    if eyes.size > 2
+      # 高さが平均値に近い順に選択する
+      eye_y_avg = eyes.inject(0){|sum, e| sum += e.center.y} / eyes.count
+      eyes = eyes.sort_by{|e| (e.center.y - eye_y_avg).abs }[0..1]
+    end
+    eyes.sort_by{|e| e.center.x }
   end
 
   def eye_detect!

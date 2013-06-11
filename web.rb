@@ -61,9 +61,9 @@ get '/up' do
 
     image = EyeDetect.load(output)
     eyes = image.eye_detect
-    raise "Cannot detect eyes enough" if eyes.size < 2
-    left_eye  = eyes.first
-    right_eye = eyes.last
+    left_eye  = eyes[0]
+    right_eye = eyes[1]
+    puts "eye[left: #{left_eye.inspect}, right: #{right_eye.inspect}]"
     @eye  = Struct.new(:center_x, :center_y).new
     @eye.center_x = (left_eye.center.x + right_eye.center.x) / 2
     @eye.center_y = (left_eye.center.y + right_eye.center.y) / 2
