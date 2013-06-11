@@ -17,4 +17,5 @@ tmp
 _yardoc
 doc/
 
-public/temp.jpg
+public/*.jpg
+public/*.png

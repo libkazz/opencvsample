@@ -14,6 +14,11 @@ require 'awesome_print'
 require 'debugger'
 require 'eye_detect'
 
+GLASSES = {
+  773  => "http://dahpbpalpng0r.cloudfront.net/products/773_kadoya22-1/product/4057_1_front.jpg",
+  2614 => "http://dahpbpalpng0r.cloudfront.net/products/2614_jill-stuart-05-0174-2/product/9957_4_front.jpg"
+}
+
 set :haml, {:format => :html5 }
 
 get '/image' do
@@ -23,6 +28,20 @@ end
 get '/up' do
   @url = params[:url]
   @method = params[:method]
+  @glass = params[:glass]
+
+  open(@glass) do |sock|
+    temp = Tempfile.open(File.basename(@glass))
+    temp.binmode
+    temp.write(sock.read)
+
+    output = "public/glass.png"
+    output_tmp = "public/glass_tmp.png"
+    temp_image = Magick::Image.read(temp.path).first
+    temp_image.resize_to_fit!(230)
+    temp_image.write(output_tmp)
+    `convert -fuzz 20% -transparent "#ffffff" #{output_tmp} #{output}`
+  end
 
   open(@url) do |sock|
     temp = Tempfile.open(File.basename(@url))

@@ -10,7 +10,22 @@
       - %w(original eye_detect binary adaptive_binary).each do |method|
         %option{value: method, selected: method == @method} #{method}
   %p
+    %label Glass:
+    %select{name: "glass"}
+      - GLASSES.each do |sku, src|
+        %option{value: src, selected: src == @src} #{sku}
+  %p
     %input{type: "submit"}
   %hr
-    %img{src: "/temp.jpg", width: 350}
+    %img{src: "/temp.jpg", width: 350, id: "face"}
+    - if @glass
+      %img{src: "/glass.png", id: "glass"}
 
+:css
+  #glass {
+    position: absolute;
+    top: 365px;
+    left: 70px;
+    width: 230px;
+    height: 120px;
+  }
