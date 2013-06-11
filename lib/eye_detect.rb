@@ -38,6 +38,24 @@ class EyeDetect
     @image = @gray.adaptive_threshold(0xFF, params)
   end
 
+  def canny!
+    @image = @gray.canny(50, 150)
+  end
+
+  def contours!
+    canny = @gray.canny(50, 150)
+    contour = canny.find_contours(mode: CV_RETR_LIST, method: CV_CHAIN_APPROX_SIMPLE)
+
+    while contour
+      unless contour.hole?
+        box = contour.bounding_rect
+        @image.rectangle! box.top_left, box.bottom_right, color: CvColor::Blue
+      end
+      contour = contour.h_next
+    end
+    @image
+  end
+
   def eye_detect!
     detectors = DETECTORS.map do |data|
       file = "/usr/local/share/OpenCV/haarcascades/#{data}"
