@@ -60,6 +60,18 @@ get '/up' do
     temp_image.write(output)
 
     image = EyeDetect.load(output)
+    eyes = image.eye_detect
+    raise "Cannot detect eyes enough" if eyes.size < 2
+    left_eye  = eyes.first
+    right_eye = eyes.last
+    @eye  = Struct.new(:center_x, :center_y).new
+    @eye.center_x = (left_eye.center.x + right_eye.center.x) / 2
+    @eye.center_y = (left_eye.center.y + right_eye.center.y) / 2
+    @face = Struct.new(:left, :right, :width).new
+    @face.left  = @eye.center_x - (@eye.center_x -  left_eye.center.x) * 2
+    @face.right = @eye.center_x - (@eye.center_x - right_eye.center.x) * 2
+    @face.width = @face.right - @face.left
+
     image.send("#{@method}!") if image.respond_to?("#{@method}!")
     image.write(output)
   end
