@@ -1,4 +1,11 @@
-%h1 Image
+:css
+  #photo {
+    width: 350px;
+    height: 410px;
+  }
+  #glass {
+    position: absolute;
+  }
 
 %form{action: "/up", method: :get}
   %p
@@ -16,16 +23,42 @@
         %option{value: src, selected: src == @src} #{sku}
   %p
     %input{type: "submit"}
-  %hr
-    %img{src: "/temp.jpg", width: 350, id: "face"}
-    - if @glass
-      %img{src: "/glass.png", id: "glass"}
+%hr
+#photo
+  %img{src: "/temp.jpg"}
+- if @glass
+  #glass
+    %img{src: "/glass.png"}
 
-:css
-  #glass {
-    position: absolute;
-    top: 365px;
-    left: 70px;
-    width: 230px;
-    height: 120px;
-  }
+:coffeescript
+  photo = {}
+  face  = { left: 53, width: 193}
+  eye   = { center_x: 111, center_y: 101 }
+  glass = { width: 212, height: 200 }
+
+  $photo = $("#photo")
+  photo.top   = $photo.position()["top"]
+  photo.left  = $photo.position()["left"]
+  photo.width = $photo.width()
+
+  $glass = $("#glass")
+  glass.top   = photo.top  + eye.center_y
+  glass.left  = photo.left + face.left
+  glass.width = face.width
+  glass.scale = glass.width / $glass.width()
+  glass.height= $glass.height() * glass.scale
+
+  console.log("glass[top: " + glass.top + ", left: " + glass.left + ", width: " + glass.width + "]")
+  $glass.css({
+    top:  glass.top,
+    left: glass.left,
+    width: glass.width,
+  })
+  $glass.children("img").css({
+    top:  glass.top,
+    left: glass.left,
+    width: glass.width,
+  })
+
+  $glass.draggable()
+

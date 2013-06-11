@@ -5,6 +5,7 @@ require 'bundler/setup'
 require 'sinatra'
 require "sinatra/reloader" if development?
 require 'haml'
+require 'coffee-script'
 require 'open-uri'
 require 'fileutils'
 require 'aws/s3'
@@ -19,7 +20,7 @@ GLASSES = {
   2614 => "http://dahpbpalpng0r.cloudfront.net/products/2614_jill-stuart-05-0174-2/product/9957_4_front.jpg"
 }
 
-set :haml, {:format => :html5 }
+set :haml, {:format => :html5, :layout => :layout }
 
 get '/image' do
   haml :image
