@@ -10,7 +10,7 @@
 %form{action: "/up", method: :get}
   %p
     %label URL:
-    %input{type: "url",  name: "url",  size: 100, value: @url}
+    %input{type: "url", name: "url", size: 100, value: @url, id: "url"}
   %p
     %label Method:
     %select{name: "method"}
@@ -54,3 +54,13 @@
   $glass.children("img").css(glass)
   $glass.draggable()
 
+  urls = [
+    "http://www.ku-baseball.com/member/images/shimada_k.JPG",
+    "http://r-center.grips.ac.jp/gallery/pics/small/%E5%B7%9D%E4%BA%BA%E5%85%88%E7%94%9F%E3%80%80%E5%86%99%E7%9C%9F_1341895835.jpg",
+    "http://www.e-agora.jp/pics/DSCF0458.JPG",
+    "http://www.mhiroto.com/wp/wp-content/uploads/2013/04/33875c866013bb35553ee3ca21df107c.jpg",
+    "http://www.cocomo1.net/img/face/g/bofor.jpg",
+    "http://amd.c.yimg.jp/im_siggvn_KdlOusQcFenzCFlLjsA---x341-y450-q90/amd/20130411-00000020-modelp-000-1-view.jpg",
+    "http://dahpbpalpng0r.cloudfront.net/products/2_kadoya11-2/product/430_1_front.jpg",
+  ]
+  $("#url").autocomplete({source: urls})
