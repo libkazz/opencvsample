@@ -60,15 +60,15 @@ get '/up' do
     temp.binmode
     temp.write(sock.read)
 
-    #temp_image = Magick::Image.read(temp.path).first
-    #temp_image.resize_to_fit!(350)
-    #temp_image.write(fit_name_350(temp.path))
+    output = "public/temp.jpg"
+    temp_image = Magick::Image.read(temp.path).first
+    temp_image.resize_to_fit!(350)
+    temp_image.write(output)
     #object_350.write(file: fit_name_350(temp.path), acl: :public_read, content_type: sock.content_type)
 
-    #output = "images/temp.jpg" # opencv は tempfile の path のように拡張子以降に文字列が付くものを扱えない?
-    image = EyeDetect.load(temp.path)
+    image = EyeDetect.load(output)
     image.send("#{@method}!") if image.respond_to?("#{@method}!")
-    image.write("public/temp.jpg")
+    image.write(output)
 
     #object_face.write(file: output, acl: :public_read, content_type: sock.content_type)
   end
