@@ -15,11 +15,6 @@ class EyeDetect
 
     @eye_position_left  = {x: nil, y: nil, h: nil, w: nil}
     @eye_position_right = {x: nil, y: nil, h: nil, w: nil}
-    @debug = true
-  end
-
-  def debug?
-    @debug
   end
 
   METHODS = %w(gray binary adaptive_binary canny contours hough_line eye_detect)
@@ -95,7 +90,7 @@ class EyeDetect
         puts "Detect: #{region}"
         color = CvColor::Blue
         regions << region
-        @image.circle!(region.center, (region.width + region.height)/4, color: color, line_type: :aa) if debug?
+        @image.circle!(region.center, (region.width + region.height)/4, color: color, line_type: :aa)
       end
     end
 
