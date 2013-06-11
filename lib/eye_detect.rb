@@ -1,10 +1,6 @@
 class EyeDetect
   include OpenCV
 
-  DETECTORS = %w(
-    haarcascade_eye.xml
-  )
-
   def self.load(input)
     new(input)
   end
@@ -12,9 +8,6 @@ class EyeDetect
   def initialize(input)
     @input = input
     @image = CvMat.load(@input)
-
-    @eye_position_left  = {x: nil, y: nil, h: nil, w: nil}
-    @eye_position_right = {x: nil, y: nil, h: nil, w: nil}
   end
 
   METHODS = %w(gray binary adaptive_binary canny contours hough_line eye_detect face_detect)
@@ -72,31 +65,23 @@ class EyeDetect
     end
   end
 
+  def eye_detect
+    file = "/usr/local/share/OpenCV/haarcascades/haarcascade_eye.xml"
+    detector = CvHaarClassifierCascade::load(file)
+
+    puts "Detecting: #{detector}"
+    detect_params = {
+      scale_factor: 1.2,            # 縮小スケール
+      min_neighbors: 3,             # 最低矩形数
+      min_size: CvSize.new(10,10)   # 最小矩形
+    }
+    detector.detect_objects(gray, detect_params)
+  end
+
   def eye_detect!
-    detectors = DETECTORS.map do |data|
-      file = "/usr/local/share/OpenCV/haarcascades/#{data}"
-      CvHaarClassifierCascade::load(file)
+    eye_detect.each do |region|
+      @image.circle!(region.center, (region.width + region.height)/4, color: CvColor::Blue, line_type: :aa)
     end
-
-    regions = []
-    detectors.each do |detector|
-      puts "Detecting: #{detector}"
-      detect_params = {
-        scale_factor: 1.2,            # 縮小スケール
-        min_neighbors: 3,             # 最低矩形数
-        min_size: CvSize.new(10,10)   # 最小矩形
-      }
-      detector.detect_objects(gray, detect_params).each do |region|
-        puts "Detect: #{region}"
-        color = CvColor::Blue
-        regions << region
-        @image.circle!(region.center, (region.width + region.height)/4, color: color, line_type: :aa)
-      end
-    end
-
-    # FIXME とりあえず先頭2つを選択
-    @eye_position_right, @eye_position_left = \
-      regions.map{|r| {x: r.center.x, y: r.center.y, h: r.height, w: r.width} }[0..1].sort_by{|r| r[:x] }
   end
 
   def face_detect!
