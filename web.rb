@@ -44,7 +44,7 @@ get '/up' do
     temp_image.resize_to_fit!(230)
     temp_image.write(output_tmp)
     image = GlassDetect.load(output_tmp)
-    image.get_largest_contour
+    image.get_largest_contour!
     image.write(output_tmp)
     `convert -fuzz 20% -transparent "#ffffff" #{output_tmp} #{output}`
   end if @glass && @glass != ""

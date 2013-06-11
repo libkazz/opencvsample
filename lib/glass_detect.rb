@@ -8,16 +8,19 @@ class GlassDetect
   def initialize(input)
     @input = input
     @image = CvMat.load(@input)
+  end
+
+  def gray
     @gray = OpenCV.BGR2GRAY(@image)
     @gray.equalize_hist
+    @gray
   end
 
-  def debug?
-    @debug
+  def canny
+    gray.canny(50, 150)
   end
 
-  def get_largest_contour
-    canny = @gray.canny(50, 150)
+  def get_largest_contour!
     contour = canny.find_contours(mode: CV_RETR_LIST, method: CV_CHAIN_APPROX_SIMPLE)
 
     largest = nil

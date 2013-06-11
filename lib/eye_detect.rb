@@ -12,8 +12,6 @@ class EyeDetect
   def initialize(input)
     @input = input
     @image = CvMat.load(@input)
-    @gray = OpenCV.BGR2GRAY(@image)
-    @gray.equalize_hist
 
     @eye_position_left  = {x: nil, y: nil, h: nil, w: nil}
     @eye_position_right = {x: nil, y: nil, h: nil, w: nil}
@@ -24,26 +22,33 @@ class EyeDetect
     @debug
   end
 
-  def binary!
-    @image = @gray.threshold(0x55, 0xFF, CV_THRESH_BINARY)
+  METHODS = %w(gray binary adaptive_binary canny contours hough_line eye_detect)
+
+  def gray
+    @gray = OpenCV.BGR2GRAY(@image)
+    @gray.equalize_hist
+    @gray
   end
 
-  def adaptive_binary!
+  def binary
+    gray.threshold(0x55, 0xFF, CV_THRESH_BINARY)
+  end
+
+  def adaptive_binary
     params = {
       threshold_type: CV_THRESH_BINARY,
       adaprive_method: CV_ADAPTIVE_THRESH_MEAN_C,
       block_size: 7,
       param1: 3
     }
-    @image = @gray.adaptive_threshold(0xFF, params)
+    gray.adaptive_threshold(0xFF, params)
   end
 
-  def canny!
-    @image = @gray.canny(50, 150)
+  def canny
+    gray.canny(50, 150)
   end
 
   def contours!
-    canny = @gray.canny(50, 150)
     contour = canny.find_contours(mode: CV_RETR_LIST, method: CV_CHAIN_APPROX_SIMPLE)
 
     while contour
@@ -53,21 +58,12 @@ class EyeDetect
       end
       contour = contour.h_next
     end
-    @image
   end
 
   def hough_line!
-    params = {
-      threshold_type: CV_THRESH_BINARY,
-      adaprive_method: CV_ADAPTIVE_THRESH_MEAN_C,
-      block_size: 7,
-      param1: 3
-    }
-    image = @gray.adaptive_threshold(0xFF, params)
-    image = @gray.canny(50, 200, 3)
     # mehtod, 距離分解能, 角度分解能, 閾値
     # 線分の最小長さ, 2点が同一線分上にあると見なす場合に許容される最大距離
-    seq = image.hough_lines(CV_HOUGH_STANDARD, 1, Math::PI/180, 70, 0, 0)
+    seq = canny.hough_lines(CV_HOUGH_STANDARD, 1, Math::PI/180, 70, 0, 0)
     seq.each do |line|
       a = Math.cos(line.theta)
       b = Math.sin(line.theta)
@@ -79,7 +75,6 @@ class EyeDetect
 
       @image.line! p1, p2, color: CvColor::Blue
     end
-    @image
   end
 
   def eye_detect!
@@ -96,7 +91,7 @@ class EyeDetect
         min_neighbors: 3,             # 最低矩形数
         min_size: CvSize.new(10,10)   # 最小矩形
       }
-      detector.detect_objects(@gray, detect_params).each do |region|
+      detector.detect_objects(gray, detect_params).each do |region|
         puts "Detect: #{region}"
         color = CvColor::Blue
         regions << region
@@ -109,6 +104,14 @@ class EyeDetect
       regions.map{|r| {x: r.center.x, y: r.center.y, h: r.height, w: r.width} }[0..1].sort_by{|r| r[:x] }
   end
 
+  METHODS.each do |m|
+    bang_method = "#{m}!"
+    unless method_defined?(bang_method)
+      define_method(bang_method) do
+        @image = send(m)
+      end
+    end
+  end
 
   def write(output)
     @image.save_image(output)
