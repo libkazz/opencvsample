@@ -24,6 +24,20 @@ class EyeDetect
     @debug
   end
 
+  def binary!
+    @image = @gray.threshold(0x55, 0xFF, CV_THRESH_BINARY)
+  end
+
+  def adaptive_binary!
+    params = {
+      threshold_type: CV_THRESH_BINARY,
+      adaprive_method: CV_ADAPTIVE_THRESH_MEAN_C,
+      block_size: 7,
+      param1: 3
+    }
+    @image = @gray.adaptive_threshold(0xFF, params)
+  end
+
   def eye_detect!
     detectors = DETECTORS.map do |data|
       file = "/usr/local/share/OpenCV/haarcascades/#{data}"
@@ -63,5 +77,6 @@ if __FILE__ == $0 && ARGV.length == 2
   image = EyeDetect.load(ARGV[0])
   image.eye_detect!
   image.write(ARGV[1])
+  `open ARGV[1]`
 end
 
