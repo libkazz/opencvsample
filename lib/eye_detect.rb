@@ -17,7 +17,7 @@ class EyeDetect
     @eye_position_right = {x: nil, y: nil, h: nil, w: nil}
   end
 
-  METHODS = %w(gray binary adaptive_binary canny contours hough_line eye_detect)
+  METHODS = %w(gray binary adaptive_binary canny contours hough_line eye_detect face_detect)
 
   def gray
     @gray = OpenCV.BGR2GRAY(@image)
@@ -97,6 +97,27 @@ class EyeDetect
     # FIXME とりあえず先頭2つを選択
     @eye_position_right, @eye_position_left = \
       regions.map{|r| {x: r.center.x, y: r.center.y, h: r.height, w: r.width} }[0..1].sort_by{|r| r[:x] }
+  end
+
+  def face_detect!
+    file = "/usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml"
+    # この分類器だと検出できないケースが多い
+    #file = "/usr/local/share/OpenCV/haarcascades/haarcascade_profileface.xml"
+    detector = CvHaarClassifierCascade::load(file)
+
+    regions = []
+    puts "Detecting: #{detector}"
+    detect_params = {
+      scale_factor: 1.1,            # 縮小スケール
+      min_neighbors: 2,             # 最低矩形数
+      min_size: CvSize.new(30,30)   # 最小矩形
+    }
+    detector.detect_objects(gray, detect_params).each do |region|
+      puts "Detect: #{region}"
+      color = CvColor::Blue
+      regions << region
+      @image.rectangle!(region.top_left, region.bottom_right, color: color, line_type: :aa)
+    end
   end
 
   METHODS.each do |m|
