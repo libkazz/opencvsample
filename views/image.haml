@@ -14,7 +14,7 @@
   %p
     %label Method:
     %select{name: "method"}
-      - %w(original eye_detect binary adaptive_binary canny contours).each do |method|
+      - %w(original eye_detect binary adaptive_binary canny contours hough_line).each do |method|
         %option{value: method, selected: method == @method} #{method}
   %p
     %label Glass:

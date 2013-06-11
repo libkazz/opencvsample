@@ -56,6 +56,32 @@ class EyeDetect
     @image
   end
 
+  def hough_line!
+    params = {
+      threshold_type: CV_THRESH_BINARY,
+      adaprive_method: CV_ADAPTIVE_THRESH_MEAN_C,
+      block_size: 7,
+      param1: 3
+    }
+    image = @gray.adaptive_threshold(0xFF, params)
+    image = @gray.canny(50, 200, 3)
+    # mehtod, 距離分解能, 角度分解能, 閾値
+    # 線分の最小長さ, 2点が同一線分上にあると見なす場合に許容される最大距離
+    seq = image.hough_lines(CV_HOUGH_STANDARD, 1, Math::PI/180, 70, 0, 0)
+    seq.each do |line|
+      a = Math.cos(line.theta)
+      b = Math.sin(line.theta)
+      x0 = a * line.rho
+      y0 = b * line.rho
+
+      p1 = CvPoint.new(x0 + 1000 * (-b), y0 + 1000 * a)
+      p2 = CvPoint.new(x0 - 1000 * (-b), y0 - 1000 * a)
+
+      @image.line! p1, p2, color: CvColor::Blue
+    end
+    @image
+  end
+
   def eye_detect!
     detectors = DETECTORS.map do |data|
       file = "/usr/local/share/OpenCV/haarcascades/#{data}"
