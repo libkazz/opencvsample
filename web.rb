@@ -25,6 +25,8 @@ GLASSES = {
 set :haml, {:format => :html5, :layout => :layout }
 
 get '/image' do
+  @eye  = Struct.new(:center_x, :center_y).new
+  @face = Struct.new(:left, :right, :width).new
   haml :image
 end
 

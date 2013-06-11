@@ -32,8 +32,8 @@
 
 :coffeescript
   photo = {}
-  face  = { left: #{@face.left}, width: #{@face.width} }
-  eye   = { center_x: #{@eye.center_x}, center_y: #{@eye.center_y}}
+  face  = { left: #{@face.left || 0}, width: #{@face.width || 0} }
+  eye   = { center_x: #{@eye.center_x || 0}, center_y: #{@eye.center_y || 0}}
   glass = { width: 212, height: 58 }
 
   console.log("face[left: " + face.left + ", width: " + face.width + "]")
