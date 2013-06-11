@@ -49,16 +49,8 @@
   glass.height= $glass.height() * glass.scale
 
   console.log("glass[top: " + glass.top + ", left: " + glass.left + ", width: " + glass.width + "]")
-  $glass.css({
-    top:  glass.top,
-    left: glass.left,
-    width: glass.width,
-  })
-  $glass.children("img").css({
-    top:  glass.top,
-    left: glass.left,
-    width: glass.width,
-  })
 
+  $glass.css(glass)
+  $glass.children("img").css(glass)
   $glass.draggable()
 
