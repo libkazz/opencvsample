@@ -8,6 +8,7 @@ require 'haml'
 require 'base64'
 require 'coffee-script'
 require 'open-uri'
+require 'openssl'
 require 'fileutils'
 require 'aws/s3'
 require 'RMagick'
@@ -17,6 +18,7 @@ require 'debugger'
 require 'eye_detect'
 require 'glass_detect'
 
+OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 GLASSES = open("images/glasses.csv").readlines.inject({}){|h,line| name,url = line.strip.gsub(/"/,"").split(","); h.store(name, url); h}
 
 set :haml, {:format => :html5, :layout => :layout }
