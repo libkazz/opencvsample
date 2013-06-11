@@ -39,8 +39,9 @@ def fit_name_face(name)
 end
 
 get '/up' do
-  user = params[:user]
-  url = params[:url]
+  @user = params[:user]
+  @url = params[:url]
+  @method = params[:method]
   #s3 = ::AWS::S3.new(
   #  access_key_id:     ENV["S3_ACCESS_KEY"],
   #  secret_access_key: ENV["S3_SECRET"]
@@ -49,12 +50,12 @@ get '/up' do
   #s3.buckets.create(bucket_name) unless s3.buckets[bucket_name].exists?
   #bucket = s3.buckets[bucket_name]
   #image_prefix = "images"
-  image_name = use_original_name ? File.basename(url) : new_name(url)
-  #image_path = File.join(image_prefix, user, image_name)
+  image_name = use_original_name ? File.basename(@url) : new_name(@url)
+  #image_path = File.join(image_prefix, @user, image_name)
   #object_350 = bucket.objects[fit_name_350(image_path)]
   #bject_face = bucket.objects[fit_name_face(image_path)]
 
-  open(url) do |sock|
+  open(@url) do |sock|
     temp = Tempfile.open(image_name)
     temp.binmode
     temp.write(sock.read)
@@ -66,12 +67,12 @@ get '/up' do
 
     #output = "images/temp.jpg" # opencv は tempfile の path のように拡張子以降に文字列が付くものを扱えない?
     image = EyeDetect.load(temp.path)
-    image.eye_detect!
+    image.send("#{@method}!") if image.respond_to?("#{@method}!")
     image.write("public/temp.jpg")
 
     #object_face.write(file: output, acl: :public_read, content_type: sock.content_type)
   end
   #redirect object_face.public_url.to_s
-  redirect "/temp.jpg"
+  haml :image
 end
 

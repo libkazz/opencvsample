@@ -3,10 +3,17 @@
 %form{action: "/up", method: :get}
   %p
     %label User:
-    %input{type: "text", name: "user", size: 30}
+    %input{type: "text", name: "user", size: 30, value: @user}
   %p
     %label URL:
-    %input{type: "url",  name: "url",  size: 100}
+    %input{type: "url",  name: "url",  size: 100, value: @url}
+  %p
+    %label Method:
+    %select{name: "method"}
+      - %w(original eye_detect binary adaptive_binary).each do |method|
+        %option{value: method, selected: method == @method} #{method}
   %p
     %input{type: "submit"}
+  %hr
+    %img{src: "/temp.jpg", width: 350}
 
