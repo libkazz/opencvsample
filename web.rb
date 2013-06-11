@@ -16,11 +16,7 @@ require 'debugger'
 require 'eye_detect'
 require 'glass_detect'
 
-GLASSES = {
-  nil  => "",
-  773  => "http://dahpbpalpng0r.cloudfront.net/products/773_kadoya22-1/product/4057_1_front.jpg",
-  2614 => "http://dahpbpalpng0r.cloudfront.net/products/2614_jill-stuart-05-0174-2/product/9957_4_front.jpg"
-}
+GLASSES = open("images/glasses.csv").readlines.inject({}){|h,line| name,url = line.strip.gsub(/"/,"").split(","); h.store(name, url); h}
 
 set :haml, {:format => :html5, :layout => :layout }
 
