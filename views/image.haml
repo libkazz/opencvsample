@@ -10,6 +10,10 @@
   #capture-button {
     margin-left: -80px;
   }
+  #share-button {
+    display: none;
+    margin-left: 20px;
+  }
   #capture {
     float: left;
     width: 350px;
@@ -40,6 +44,7 @@
       %img{src: "/glass.png"}
 %button{id: "capture-button"} Capture
 #capture
+%button{id: "share-button"} Share
 
 :coffeescript
   photo = {}
@@ -90,6 +95,23 @@
 :javascript
   $(window).ready(function() {
     $("#capture-button").click(function(){
-      html2canvas($("#photo")[0], { onrendered: function(canvas){ $("#capture").append(canvas); },  logging: true });
+      html2canvas($("#photo")[0], {
+        onrendered: function(canvas){
+          $("#capture").append(canvas);
+          $("#share-button").show();
+        },
+        logging: true
+      });
+    });
+
+    var upload = function(canvas) {
+      $.post('/share', { img : canvas.toDataURL('image/jpg') }, function(data) {
+        $("#capture").fadeOut();
+        a = JSON.parse(data)
+      });
+    };
+
+    $("#share-button").click(function(){
+      upload($("#capture canvas")[0])
     });
   });

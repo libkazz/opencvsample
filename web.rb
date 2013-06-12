@@ -8,6 +8,7 @@ require 'haml'
 require 'coffee-script'
 require 'open-uri'
 require 'openssl'
+require 'base64'
 require 'fileutils'
 require 'aws/s3'
 require 'RMagick'
@@ -78,3 +79,12 @@ get '/up' do
   haml :image
 end
 
+post '/share' do
+  image = params[:img]
+  data = image.sub(/^data:image\/(png|jpg);base64,/, "")
+  format = $1
+  name = Time.now.strftime("%Y%m%d%H%M") + Digest::SHA1.hexdigest(data) + ".#{format}"
+
+  open(File.join("public", name), "wb"){|f| f << Base64.decode64(data) }
+  {src: name}.to_json
+end
