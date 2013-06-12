@@ -1,0 +1,69 @@
+:javascript
+  $(document).ready(function(){
+    //使う要素を取得(エラー処理は省略)
+    var $video = $("#video");
+    var canvas = $("#canvas").get(0);
+    var context = canvas.getContext("2d");
+    var $img = $("#img");
+    var $captureButton = $("#captureButton");
+    var $restartButton = $("#restartButton");
+    var $postButton = $("#postButton");
+
+    //ブラウザ間で仕様が違うらしいオブジェクト
+    var windowURL = window.URL || window.webkitURL;
+    //別名を作れないので上書きしておく
+    navigator.getUserMedia = navigator.getUserMedia ||
+                             navigator.webkitGetUserMedia ||
+                             navigator.mozGetUserMedia ||
+                             navigator.msGetUserMedia;
+
+    //取れなかったら動作しない
+    if (windowURL == null || navigator.getUserMedia == null) {
+      alert("Google Chrome か Firefox をお使いください");
+      return;
+    }
+
+    //ストップボタンで止めれるようにしておく
+    $captureButton.click(function() {
+      capture();
+      $("#video_pane").hide();
+      $("#capture_pane").show();
+    });
+    $postButton.click(function() {
+      $.post("/capture/upload",{
+        image: $img.attr("src").replace(/^data:image\/(png|jpg);base64,/, "")
+      })
+    });
+    $restartButton.click(function() {
+      $("#video_pane").show();
+      $("#capture_pane").hide();
+    });
+    var capture = function() {
+      height = canvas.width * ($video[0].videoHeight / $video[0].videoWidth)
+      //元のままだと大きいから縮小してる
+      context.drawImage(video, 0, 0, canvas.width, height);
+      $img.attr("src", canvas.toDataURL("image/png"));
+    };
+    //成功したときのコールバック
+    var success = function(stream) {
+      $video.attr("src", windowURL.createObjectURL(stream));
+      //キャプチャも開始する
+      capture();
+    };
+    //失敗したときのコールバック
+    var error = function(e) {
+      alert("失敗");
+    };
+    //音も取れるらしいけど今回は動画のみ
+    //getUserMediaの第一引数の型が途中で仕様変更されたらしい
+    navigator.getUserMedia({video: true}, success, error);
+  });
+
+#video_pane
+  %video#video{width: 230, height: 300, autoplay: true}
+  %button#captureButton capture
+#capture_pane{style: "display: none;"}
+  %canvas#canvas{width: 230, height: 300, style: "display: none;"}
+  %img#img{alt: "img", width: 230, height: 300}
+  %button#restartButton restart
+  %button#postButton post
