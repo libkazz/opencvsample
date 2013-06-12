@@ -5,6 +5,7 @@ require 'bundler/setup'
 require 'sinatra'
 require "sinatra/reloader" if development?
 require 'haml'
+require 'base64'
 require 'coffee-script'
 require 'open-uri'
 require 'fileutils'
@@ -76,3 +77,15 @@ get '/up' do
   haml :image
 end
 
+get '/capture' do
+  haml :capture
+end
+
+post '/capture/upload' do
+  image_str = params[:image]
+  image_bin = Base64.decode64(image_str)
+  File.open("upload.png", "wb") do |f|
+    f.write(image_bin)
+  end
+  "saved"
+end
