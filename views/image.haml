@@ -1,10 +1,18 @@
 :css
   #photo {
+    float: left;
     width: 350px;
   }
   #glass {
     position: absolute;
     z-index: 100;
+  }
+  #capture-button {
+    margin-left: -80px;
+  }
+  #capture {
+    float: left;
+    width: 350px;
   }
 
 %form{action: "/up", method: :get}
@@ -19,6 +27,7 @@
   %p
     %label Glass:
     %select{name: "glass"}
+      %option{value: ""} (Prease select)
       - GLASSES.each do |sku, src|
         %option{value: src, selected: src == @glass} #{sku}
   %p
@@ -26,9 +35,11 @@
 %hr
 #photo
   %img{src: "/temp.jpg"}
-- if @glass && @glass != ""
-  #glass
-    %img{src: "/glass.png"}
+  - if @glass && @glass != ""
+    #glass
+      %img{src: "/glass.png"}
+%button{id: "capture-button"} Capture
+#capture
 
 :coffeescript
   photo = {}
@@ -67,6 +78,18 @@
     "http://www.mhiroto.com/wp/wp-content/uploads/2013/04/33875c866013bb35553ee3ca21df107c.jpg",
     "http://www.cocomo1.net/img/face/g/bofor.jpg",
     "http://amd.c.yimg.jp/im_siggvn_KdlOusQcFenzCFlLjsA---x341-y450-q90/amd/20130411-00000020-modelp-000-1-view.jpg",
+    "http://developer.cybozu.co.jp/akky/wp-content/uploads/2013/01/sIMG_20130124_031010.jpg",
+    "http://rr.img.naver.jp/mig?src=http%3A%2F%2Fimgcc.naver.jp%2Fkaze%2Fmission%2FUSER%2F2%2F7%2F227147%2F4025%2F387x426x6a8224a16e2d79bacd10ce2a.jpg%2F300%2F600&twidth=300&theight=600&qlt=80&res_format=jpg&op=r",
+    "http://obaco.arrow.jp/img/img30_TKY200606210496.jpg",
+    "http://fsimg.afloat.co.jp/fs2cabinet/gd2/gd2438/gd2438-m-01-dl.jpg",
+    "http://www.asahi.com/eco/images/OSK200907100179.jpg",
     "http://dahpbpalpng0r.cloudfront.net/products/2_kadoya11-2/product/430_1_front.jpg",
   ]
   $("#url").autocomplete({source: urls})
+
+:javascript
+  $(window).ready(function() {
+    $("#capture-button").click(function(){
+      html2canvas($("#photo")[0], { onrendered: function(canvas){ $("#capture").append(canvas); },  logging: true });
+    });
+  });
