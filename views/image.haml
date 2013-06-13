@@ -18,33 +18,33 @@
 %form{action: "/up", method: :get}
   %p
     %label URL:
-    %input{type: "url", name: "url", size: 100, value: @url, id: "url"}
+    %input{type: "url", name: "url", size: 100, value: params[:url], id: "url"}
   %p
     %label Method:
     %select{name: "method"}
       - (["original"] + EyeDetect::METHODS).each do |method|
-        %option{value: method, selected: method == @method} #{method}
+        %option{value: method, selected: method == params[:method]} #{method}
   %p
     %label Glass:
-    %select{name: "glass"}
+    %select{name: "glass_id"}
       %option{value: ""} (Prease select)
-      - GLASSES.each do |sku, src|
-        %option{value: src, selected: src == @glass} #{sku}
+      - Glass.all.each do |glass|
+        %option{value: glass.id, selected: glass.id.to_s == params[:glass_id]} #{glass.name}
   %p
     %input{type: "submit"}
 %hr
 #photo
-  %img{src: "/temp.jpg"}
-  - if @glass && @glass != ""
+  %img{src: @photo.src}
+  - if @glass
     #glass
-      %img{src: "/glass.png"}
+      %img{src: @glass.src}
 %button{id: "capture-button"} Capture
 #capture
 
 :coffeescript
   photo = {}
-  face  = { left: #{@face.left || 0}, width: #{@face.width || 0} }
-  eye   = { center_x: #{@eye.center_x || 0}, center_y: #{@eye.center_y || 0}}
+  face  = { left: #{@face.left}, width: #{@face.width} }
+  eye   = { center_x: #{@eyes.center_x}, center_y: #{@eyes.center_y}}
   glass = { width: 212, height: 58 }
 
   console.log("face[left: " + face.left + ", width: " + face.width + "]")

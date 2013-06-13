@@ -1,6 +1,8 @@
 class EyeDetect
   include OpenCV
 
+  METHODS = %w(gray binary adaptive_binary canny contours hough_line eye_detect face_detect)
+
   def self.load(input)
     new(input)
   end
@@ -9,8 +11,6 @@ class EyeDetect
     @input = input
     @image = CvMat.load(@input)
   end
-
-  METHODS = %w(gray binary adaptive_binary canny contours hough_line eye_detect face_detect)
 
   def gray
     @gray = OpenCV.BGR2GRAY(@image)
