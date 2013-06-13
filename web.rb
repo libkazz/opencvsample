@@ -38,22 +38,20 @@ class Web < Sinatra::Application
   end
 
   get '/image' do
-    @photo = Photo.new
-    @eyes = Eyes.new
-    @face = Face.new
-    haml :image
-  end
-
-  get '/up' do
     url = params[:url]
     method = params[:method]
-    @glass = Glass.find_by_id(params[:glass_id])
-    @photo = Photo.new(url)
-    @photo.download
-    @photo.resize
-    @eyes  = @photo.eyes
-    @face  = @photo.face
-    @photo.draw!(method)
+
+    if url
+      @glass = Glass.find_by_id(params[:glass_id])
+      @photo = Photo.new(url)
+      @photo.download
+      @photo.resize
+      @eyes  = @photo.eyes
+      @face  = @photo.face
+      @photo.draw!(method)
+      @eyes  = @photo.eyes
+      @face  = @photo.face
+    end
 
     haml :image
   end
