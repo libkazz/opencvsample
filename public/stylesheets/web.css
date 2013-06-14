@@ -19,6 +19,10 @@
 #capture-button {
   margin-left: -80px;
 }
+#share-button {
+  display: none;
+  margin-left: 20px;
+}
 #capture {
   float: left;
   width: 350px;

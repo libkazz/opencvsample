@@ -32,6 +32,7 @@
       %img{src: @glass.src}
 %button{id: "capture-button"} Capture
 #capture
+%button{id: "share-button"} Share
 
 - if @photo
   :coffeescript
@@ -69,5 +70,4 @@
       console.log("glass change: " + src)
       $("#glass img").attr("src", src)
       $("#glass img").height($(".hidden", this).height() * glass.scale)
-
 

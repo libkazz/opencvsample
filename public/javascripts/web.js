@@ -17,6 +17,23 @@ $(function() {
   $("#url").autocomplete({source: urls});
 
   $("#capture-button").click(function(){
-    html2canvas($("#photo")[0], { onrendered: function(canvas){ $("#capture").append(canvas); },  logging: true });
+    html2canvas($("#photo")[0], {
+      onrendered: function(canvas){
+        $("#capture").append(canvas);
+        $("#share-button").show();
+      },
+      logging: true
+    });
+  });
+
+  var upload = function(canvas) {
+    $.post('/share', { img : canvas.toDataURL('image/jpg') }, function(data) {
+      $("#capture").fadeOut();
+      a = JSON.parse(data)
+    });
+  };
+
+  $("#share-button").click(function(){
+    upload($("#capture canvas")[0])
   });
 });
