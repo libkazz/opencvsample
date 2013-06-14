@@ -16,18 +16,19 @@ $(function() {
 
   $("#url").autocomplete({source: urls});
 
-  $("#capture-button").click(function(){
+  var capture_wared_photo = function(){
+    console.log("capture photo");
     html2canvas($("#photo")[0], {
       onrendered: function(canvas){
         $("#capture").append(canvas);
-        // canvas.css("display", "none");
-        $("#share-button").show();
+        share_wared_photo(canvas);
       },
-      logging: true
+      logging: false
     });
-  });
+  };
 
-  var share_photo = function(canvas) {
+  var share_wared_photo = function(canvas) {
+    console.log("shared photo: " + canvas);
     $.post('/share', { img : canvas.toDataURL('image/jpg') }, function(data){
       $("#capture").children().hide();
       console.log(data);
@@ -35,10 +36,12 @@ $(function() {
       console.log("upload shared photo: " + src);
 
       $("#captures").append("<img src=\"" + src + "\" />");
+      $("#capture canvas").remove();
     });
   };
 
   $("#share-button").click(function(){
-    share_photo($("#capture canvas")[0]);
+    console.log("shared button clicked");
+    capture_wared_photo();
   });
 });

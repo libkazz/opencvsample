@@ -16,27 +16,26 @@
   %p
     %input{type: "submit"}
 
-%hr{style: "clear: both"}
-#glasses
-  %ul
-    - Glass.randum(5).each do |glass|
-      %li
-        %a{href: "#", class: "display", id: "glass_#{glass.id}", src: glass.src}
-          %img{src: glass.image_url, width: 120}
-          %img{src: glass.src, class: "hidden"}
-#photo
-  - if @photo
-    %img{src: @photo.src}
-  - if @glass
-    #glass
-      %img{src: @glass.src}
-%button{id: "capture-button"} Capture
-#capture
-%button{id: "share-button"} Share
-
-%br
-%hr{style: "clear: both"}
-#captures
+#main
+  #left
+    #glasses
+      %ul
+        - Glass.randum(4).each do |glass|
+          %li
+            %a{href: "#", class: "display", id: "glass_#{glass.id}", src: glass.src}
+              %img{src: glass.image_url, width: 120}
+              %img{src: glass.src, class: "hidden"}
+  #center
+    #photo
+      - if @photo
+        %img{src: @photo.src}
+      - if @glass
+        #glass
+          %img{src: @glass.src}
+    %button{id: "share-button"} Share
+  #right
+    #capture
+    #captures
 
 - if @photo
   :coffeescript
