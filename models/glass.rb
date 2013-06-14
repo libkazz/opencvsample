@@ -22,6 +22,10 @@ class Glass
     def all
       GLASSES.map.with_index{|(name, src),i| new(i+1, name, src) }
     end
+
+    def randum(n = 5)
+      all.shuffle[0...n].each{|g| g.download && g.transparent }
+    end
   end
 
   attr_reader :id, :name, :image_url, :filename, :original_path, :overlay_path

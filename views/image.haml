@@ -1,4 +1,14 @@
 :css
+  #glasses {
+    float: left;
+    width: 170px;
+  }
+  #glasses ul {
+    list-style-type: none;
+  }
+  #glasses ul img.hidden {
+    display: none;
+  }
   #photo {
     float: left;
     width: 350px;
@@ -32,7 +42,15 @@
         %option{value: glass.id, selected: glass.id.to_s == params[:glass_id]} #{glass.name}
   %p
     %input{type: "submit"}
+
 %hr
+#glasses
+  %ul
+    - Glass.randum(10).each do |glass|
+      %li
+        %a{href: "#", class: "display", id: "glass_#{glass.id}", src: glass.src}
+          %img{src: glass.image_url, width: 120}
+          %img{src: glass.src, class: "hidden"}
 #photo
   - if @photo
     %img{src: @photo.src}
@@ -73,6 +91,12 @@
     $glass.children("img").css(glass)
     $glass.draggable()
 
+    $("#glasses a").click ->
+      src = $(this).attr("src")
+      console.log("glass change: " + src)
+      $("#glass img").attr("src", src)
+      $("#glass img").height($(".hidden", this).height() * glass.scale)
+
 :coffeescript
   urls = [
     "http://www.ku-baseball.com/member/images/shimada_k.JPG",
@@ -96,3 +120,4 @@
       html2canvas($("#photo")[0], { onrendered: function(canvas){ $("#capture").append(canvas); },  logging: true });
     });
   });
+
