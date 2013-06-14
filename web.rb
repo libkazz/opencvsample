@@ -74,9 +74,13 @@ class Web < Sinatra::Application
     image = params[:img]
     data = image.sub(/^data:image\/(png|jpg);base64,/, "")
     format = $1
-    name = Time.now.strftime("%Y%m%d%H%M") + Digest::SHA1.hexdigest(data) + ".#{format}"
-
-    open(File.join("public", name), "wb"){|f| f << Base64.decode64(data) }
-    {src: name}.to_json
+    filename = Digest::SHA1.hexdigest(data) + ".#{format}"
+    dir = File.join("public", "shared", Time.now.strftime("%Y%m%d"))
+    path = File.join(dir, filename)
+    FileUtils.mkdir_p(dir)
+    open(path, "wb") do |f|
+      f.write(Base64.decode64(data))
+    end
+    {src: URI.escape(path.sub("public", "")) }.to_json
   end
 end

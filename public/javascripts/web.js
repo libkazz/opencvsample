@@ -20,20 +20,25 @@ $(function() {
     html2canvas($("#photo")[0], {
       onrendered: function(canvas){
         $("#capture").append(canvas);
+        // canvas.css("display", "none");
         $("#share-button").show();
       },
       logging: true
     });
   });
 
-  var upload = function(canvas) {
-    $.post('/share', { img : canvas.toDataURL('image/jpg') }, function(data) {
-      $("#capture").fadeOut();
-      a = JSON.parse(data)
+  var share_photo = function(canvas) {
+    $.post('/share', { img : canvas.toDataURL('image/jpg') }, function(data){
+      $("#capture").children().hide();
+      console.log(data);
+      var src = JSON.parse(data)["src"];
+      console.log("upload shared photo: " + src);
+
+      $("#captures").append("<img src=\"" + src + "\" />");
     });
   };
 
   $("#share-button").click(function(){
-    upload($("#capture canvas")[0])
+    share_photo($("#capture canvas")[0]);
   });
 });
