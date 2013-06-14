@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require "sinatra/reloader"
+require 'active_support/core_ext'
 require 'logger'
 require 'haml'
 require 'base64'
@@ -38,21 +39,25 @@ class Web < Sinatra::Application
     also_reload "lib/*.rb"
   end
 
-  get '/image' do
-    url = params[:url]
-    method = params[:method]
+  def sample_photos
+    sample_folder = File.join(File.dirname(__FILE__) + '/public', "samples")
+    Dir[sample_folder + "/*.jpg"].map{|path| File.basename(path) }
+  end
 
-    if url
-      @glass = Glass.find_by_id(params[:glass_id])
-      @photo = Photo.new(url)
-      @photo.download
-      @photo.resize
-      @eyes  = @photo.eyes
-      @face  = @photo.face
-      @photo.draw!(method)
-      @eyes  = @photo.eyes
-      @face  = @photo.face
-    end
+  get '/image' do
+    url = params[:url].presence || sample_photos.first
+    method = params[:method]
+    glass_id = params[:glass_id].presence || 1
+
+    @glass = Glass.find_by_id(params[:glass_id])
+    @photo = Photo.new(url)
+    @photo.download
+    @photo.resize
+    @eyes  = @photo.eyes
+    @face  = @photo.face
+    @photo.draw!(method)
+    @eyes  = @photo.eyes
+    @face  = @photo.face
 
     haml :image
   end

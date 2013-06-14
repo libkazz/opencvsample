@@ -51,8 +51,17 @@ class Photo
     return if File.exist?(original_path)
 
     FileUtils.mkdir_p(File.dirname(original_path))
-    open(image_url) do |sock|
-      open(original_path, "wb"){|io| io << sock.read}
+    if image_url =~ /^https?:\/\//
+      $logger.debug "Photo#download: #{image_url}, to: #{original_path}"
+      open(image_url) do |sock|
+        open(original_path, "wb"){|io| io << sock.read}
+      end
+    elsif File.file?(File.join("public/samples", image_url))
+      $logger.debug "Photo#download(local sample file): #{image_url}, to: #{original_path}"
+      FileUtils.cp(File.join("public/samples", image_url), original_path)
+    else
+      raise "No photo exception (#{image_url})"
+      nil
     end
   end
 

@@ -10,6 +10,9 @@ GIT
 GEM
   remote: http://rubygems.org/
   specs:
+    active_support (3.0.0)
+      activesupport (= 3.0.0)
+    activesupport (3.0.0)
     awesome_print (1.1.0)
     backports (3.3.1)
     coffee-script (2.2.0)
@@ -32,6 +35,7 @@ GEM
       thor (>= 0.13.6)
     haml (4.0.3)
       tilt
+    i18n (0.6.4)
     json (1.8.0)
     multi_json (1.7.3)
     nokogiri (1.5.10)
@@ -66,6 +70,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  active_support
   awesome_print
   aws-sdk!
   bundler
@@ -73,6 +78,7 @@ DEPENDENCIES
   debugger
   foreman
   haml
+  i18n
   racksh
   rmagick
   ruby-opencv
