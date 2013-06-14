@@ -1,0 +1,26 @@
+#glasses {
+  float: left;
+  width: 170px;
+}
+#glasses ul {
+  list-style-type: none;
+}
+#glasses ul img.hidden {
+  display: none;
+}
+#photo {
+  float: left;
+  width: 350px;
+}
+#glass {
+  position: absolute;
+  z-index: 100;
+}
+#capture-button {
+  margin-left: -80px;
+}
+#capture {
+  float: left;
+  width: 350px;
+}
+
