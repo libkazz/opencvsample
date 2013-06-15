@@ -8,6 +8,15 @@
               %img{src: glass.image_url, width: 120}
               %img{src: glass.src, class: "hidden"}
   #center
+    #video_pane
+      %video#video{autoplay: true}
+      #frame
+      %button#captureButton capture
+    #capture_pane
+      %canvas#canvas{width: 350, height: 350}
+      %img#img
+      %button#restartButton restart
+      %button#postButton post
     #photo
       - if @photo
         %img{src: @photo.src}
@@ -55,3 +64,75 @@
     $("#glass img").attr("src", src)
     $("#glass img").height($(".hidden", this).height() * glass.scale)
 
+:javascript
+  $(document).ready(function(){
+    var $video = $("#video");
+    var canvas = $("#canvas").get(0);
+    var context = canvas.getContext("2d");
+    var $img = $("#photo img:first");
+    var $captureButton = $("#captureButton");
+    var $restartButton = $("#restartButton");
+    var $postButton    = $("#postButton");
+
+    //ブラウザ間で仕様が違うらしいオブジェクト
+    var windowURL = window.URL || window.webkitURL;
+    //別名を作れないので上書きしておく
+    navigator.getUserMedia = navigator.getUserMedia ||
+                             navigator.webkitGetUserMedia ||
+                             navigator.mozGetUserMedia ||
+                             navigator.msGetUserMedia;
+
+    //取れなかったら動作しない
+    if (windowURL == null || navigator.getUserMedia == null) {
+      alert("Google Chrome か Firefox をお使いください");
+      return;
+    }
+
+    $captureButton.click(function() {
+      capture();
+      $("#video_pane").hide();
+      $("#capture_pane").show();
+    });
+
+    $postButton.click(function() {
+      $.post("/capture/upload",{
+        image: $img.attr("src").replace(/^data:image\/(png|jpg);base64,/, "")
+      })
+    });
+
+    $restartButton.click(function() {
+      $("#video_pane").show();
+      $("#capture_pane").hide();
+    });
+
+    var capture = function() {
+      video_width  = $video[0].videoWidth;
+      video_height = $video[0].videoHeight;
+      panel_width  = $video.width();
+      frame_width  = $video.height();
+      scale = video_width / panel_width;
+
+      console.debug("video size:   " + video_width + ", " + video_height); // MBA is 640 x 480
+      console.debug("panel size:   " + panel_width + ", " + frame_width + " (" + scale +")");
+
+      capture_left = (panel_width - frame_width) / 2 * scale;
+      console.debug("capture left: " + capture_left);
+
+      context.drawImage(video, capture_left, 0, 480, 480, 0, 0, 350, 350);
+      $img.attr("src", canvas.toDataURL("image/png"));
+    };
+
+    //成功したときのコールバック
+    var success = function(stream) {
+      $video.attr("src", windowURL.createObjectURL(stream));
+      //キャプチャも開始する
+      capture();
+    };
+    //失敗したときのコールバック
+    var error = function(e) {
+      alert("失敗");
+    };
+    //音も取れるらしいけど今回は動画のみ
+    //getUserMediaの第一引数の型が途中で仕様変更されたらしい
+    navigator.getUserMedia({video: true}, success, error);
+  });

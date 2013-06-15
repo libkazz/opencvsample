@@ -40,3 +40,36 @@
   margin-right: 20px;
   width: 120px;
 }
+
+
+#center #video_pane {
+  position: absolute;
+}
+#center #video_pane video#video{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 465px;
+  height: 350px;
+}
+#center #video_pane #frame {
+  position: absolute;
+  top: 0px;
+  left: 55.5px;
+  width: 346px;
+  height: 346px;
+  border: 2px solid rgba(255, 0, 0, 0.5);
+}
+#center #video_pane #captureButton {
+  position: relative;
+}
+#center #capture_pane {
+   display: none;
+}
+#center #capture_pane canvas#canvas{
+   display: none;
+}
+#center #capture_pane img#img{
+   width: 350px;
+   height: 350px;
+}
