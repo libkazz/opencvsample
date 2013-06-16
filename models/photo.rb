@@ -59,6 +59,9 @@ class Photo
     elsif File.file?(File.join("public/samples", image_url))
       $logger.debug "Photo#download(local sample file): #{image_url}, to: #{original_path}"
       FileUtils.cp(File.join("public/samples", image_url), original_path)
+    elsif File.file?(File.join("public/uploads", image_url))
+      $logger.debug "Photo#download(local sample file): #{image_url}, to: #{original_path}"
+      FileUtils.cp(File.join("public/uploads", image_url), original_path)
     else
       raise "No photo exception (#{image_url})"
       nil

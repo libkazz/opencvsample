@@ -62,6 +62,24 @@ class Web < Sinatra::Application
     haml :image
   end
 
+  post '/photo' do
+    url = params[:url].presence || sample_photos.first
+    method = params[:method] || "original"
+
+    photo = Photo.new(url)
+    photo.download
+    photo.resize
+    eyes  = photo.eyes
+    face  = photo.face
+    photo.draw!(method)
+    eyes  = photo.eyes
+    face  = photo.face
+
+    { face: { left: face.left, width: face.width },
+      eye:  { center_x: eyes.center_x, center_y: eyes.center_y }
+    }.to_json
+  end
+
   get '/capture' do
     haml :capture
   end
@@ -69,10 +87,26 @@ class Web < Sinatra::Application
   post '/capture/upload' do
     image_str = params[:image]
     image_bin = Base64.decode64(image_str)
-    File.open("upload.png", "wb") do |f|
+    FileUtils.mkdir_p("public/uploads") ##
+    File.open("public/uploads/upload.jpg", "wb") do |f|
       f.write(image_bin)
     end
-    "saved"
+
+    url = "upload.jpg"
+    method = params[:method] || "original"
+
+    photo = Photo.new(url)
+    photo.download
+    photo.resize
+    eyes  = photo.eyes
+    face  = photo.face
+    photo.draw!(method)
+    eyes  = photo.eyes
+    face  = photo.face
+
+    { face: { left: face.left, width: face.width },
+      eye:  { center_x: eyes.center_x, center_y: eyes.center_y }
+    }.to_json
   end
 
   post '/share' do

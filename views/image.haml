@@ -26,35 +26,40 @@
   %canvas#capture{width: 350, height: 350, style: 'display: none;'}
 
 :coffeescript
+  $.photo = {}
+
   photo = {
     face: { left: #{@face.left}, width: #{@face.width} },
     eye:  { center_x: #{@eyes.center_x}, center_y: #{@eyes.center_y} }
   }
   glass = { width: 212, height: 58 }
-
   console.log("face[left: " + photo.face.left + ", width: " + photo.face.width + "]")
   console.log("eye[center_x: " + photo.eye.center_x + ", center_y: " + photo.eye.center_y + "]")
 
-  $photo = $("#photo")
-  photo.top   = $photo.position()["top"]
-  photo.left  = $photo.position()["left"]
-  photo.width = $photo.width()
-  photo.height= $photo.height()
+  $.photo.wear_glass = (photo, glass)->
+    console.debug("wear glass")
+    $photo = $("#photo")
+    photo.top   = $photo.position()["top"]
+    photo.left  = $photo.position()["left"]
+    photo.width = $photo.width()
+    photo.height= $photo.height()
 
-  console.log("photo[top: " + photo.top + ", left: " + photo.left + ", width: " + photo.width + ", height: " + photo.height + "]")
+    console.log("photo[top: " + photo.top + ", left: " + photo.left + ", width: " + photo.width + ", height: " + photo.height + "]")
 
-  $glass = $("#glass")
-  glass.width = photo.face.width
-  glass.scale = glass.width / $glass.width()
-  glass.height= $glass.height() * glass.scale
-  glass.top   = photo.top  + photo.eye.center_y - glass.height * 0.4 # つるが上にはみ出ているせいで、画像高さがやや高く計算されてしまう問題の対策
-  glass.left  = photo.left + photo.face.left
+    $glass = $("#glass")
+    glass.width = photo.face.width
+    glass.scale = glass.width / $glass.width()
+    glass.height= $glass.height() * glass.scale
+    glass.top   = photo.top  + photo.eye.center_y - glass.height * 0.4 # つるが上にはみ出ているせいで、画像高さがやや高く計算されてしまう問題の対策
+    glass.left  = photo.left + photo.face.left
 
-  console.log("glass[top: " + glass.top + ", left: " + glass.left + ", width: " + glass.width + ", height: " + glass.height + ", scale: " + glass.scale + "]")
+    console.log("glass[top: " + glass.top + ", left: " + glass.left + ", width: " + glass.width + ", height: " + glass.height + ", scale: " + glass.scale + "]")
 
-  $glass.css(glass)
-  $glass.children("img").css(glass)
-  $glass.draggable()
+    $glass.css(glass)
+    $glass.children("img").css(glass)
+    $glass.draggable()
+
+  $.photo.wear_glass(photo, glass)
 
   $("#glasses a").click ->
     src = $(this).attr("src")
@@ -63,7 +68,7 @@
     $("#glass img").height($(".hidden", this).height() * glass.scale)
 
 :javascript
-  $(document).ready(function(){
+  $(function() {
     var $video = $("#video");
     var canvas = $("#capture").get(0);
     var context = canvas.getContext("2d");
@@ -88,14 +93,21 @@
 
     $captureButton.click(function() {
       capture();
+      postCapture();
       $("#video_pane").hide();
       $("#capture_pane").show();
     });
 
     var postCapture = function() {
+      console.debug("postCapture");
       $.post("/capture/upload",{
-        image: $img.attr("src").replace(/^data:image\/(png|jpg);base64,/, "")
-      });
+          image: $img.attr("src").replace(/^data:image\/(png|jpg);base64,/, "")
+        },
+        function(data) {
+          console.log(data);
+          $.photo.wear_glass(JSON.parse(data), glass);
+        }
+      );
     };
 
     $restartButton.click(function() {
@@ -104,6 +116,7 @@
     });
 
     var capture = function() {
+      console.debug("capture");
       video_width  = $video[0].videoWidth;
       video_height = $video[0].videoHeight;
       panel_width  = $video.width();
@@ -122,10 +135,10 @@
 
     //成功したときのコールバック
     var success = function(stream) {
+      console.debug("success");
       $video.attr("src", windowURL.createObjectURL(stream));
       //キャプチャも開始する
       capture();
-      postCapture();
     };
     //失敗したときのコールバック
     var error = function(e) {
