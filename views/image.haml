@@ -26,13 +26,14 @@
   %canvas#capture{width: 350, height: 350, style: 'display: none;'}
 
 :coffeescript
-  photo = {}
-  face  = { left: #{@face.left}, width: #{@face.width} }
-  eye   = { center_x: #{@eyes.center_x}, center_y: #{@eyes.center_y}}
+  photo = {
+    face: { left: #{@face.left}, width: #{@face.width} },
+    eye:  { center_x: #{@eyes.center_x}, center_y: #{@eyes.center_y} }
+  }
   glass = { width: 212, height: 58 }
 
-  console.log("face[left: " + face.left + ", width: " + face.width + "]")
-  console.log("eye[center_x: " + eye.center_x + ", center_y: " + eye.center_y + "]")
+  console.log("face[left: " + photo.face.left + ", width: " + photo.face.width + "]")
+  console.log("eye[center_x: " + photo.eye.center_x + ", center_y: " + photo.eye.center_y + "]")
 
   $photo = $("#photo")
   photo.top   = $photo.position()["top"]
@@ -43,11 +44,11 @@
   console.log("photo[top: " + photo.top + ", left: " + photo.left + ", width: " + photo.width + ", height: " + photo.height + "]")
 
   $glass = $("#glass")
-  glass.width = face.width
+  glass.width = photo.face.width
   glass.scale = glass.width / $glass.width()
   glass.height= $glass.height() * glass.scale
-  glass.top   = photo.top  + eye.center_y - glass.height * 0.4 # つるが上にはみ出ているせいで、画像高さがやや高く計算されてしまう問題の対策
-  glass.left  = photo.left + face.left
+  glass.top   = photo.top  + photo.eye.center_y - glass.height * 0.4 # つるが上にはみ出ているせいで、画像高さがやや高く計算されてしまう問題の対策
+  glass.left  = photo.left + photo.face.left
 
   console.log("glass[top: " + glass.top + ", left: " + glass.left + ", width: " + glass.width + ", height: " + glass.height + ", scale: " + glass.scale + "]")
 
