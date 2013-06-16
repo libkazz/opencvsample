@@ -21,7 +21,6 @@
           %img{src: @glass.src}
     %button{id: "share-button"} Share
     %button#restartButton restart
-    %button#postButton post
   #right
     #captures
   %canvas#capture{width: 350, height: 350, style: 'display: none;'}
@@ -92,11 +91,11 @@
       $("#capture_pane").show();
     });
 
-    $postButton.click(function() {
+    var postCapture = function() {
       $.post("/capture/upload",{
         image: $img.attr("src").replace(/^data:image\/(png|jpg);base64,/, "")
-      })
-    });
+      });
+    };
 
     $restartButton.click(function() {
       $("#video_pane").show();
@@ -125,6 +124,7 @@
       $video.attr("src", windowURL.createObjectURL(stream));
       //キャプチャも開始する
       capture();
+      postCapture();
     };
     //失敗したときのコールバック
     var error = function(e) {
