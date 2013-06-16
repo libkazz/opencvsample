@@ -13,10 +13,6 @@
       #frame
       %button#captureButton capture
     #capture_pane
-      %canvas#canvas{width: 350, height: 350}
-      %img#img
-      %button#restartButton restart
-      %button#postButton post
     #photo
       - if @photo
         %img{src: @photo.src}
@@ -24,9 +20,11 @@
         #glass
           %img{src: @glass.src}
     %button{id: "share-button"} Share
+    %button#restartButton restart
+    %button#postButton post
   #right
-    #capture
     #captures
+  %canvas#capture{width: 350, height: 350, style: 'display: none;'}
 
 :coffeescript
   photo = {}
@@ -67,7 +65,7 @@
 :javascript
   $(document).ready(function(){
     var $video = $("#video");
-    var canvas = $("#canvas").get(0);
+    var canvas = $("#capture").get(0);
     var context = canvas.getContext("2d");
     var $img = $("#photo img:first");
     var $captureButton = $("#captureButton");

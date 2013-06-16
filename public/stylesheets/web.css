@@ -66,9 +66,6 @@
 #center #capture_pane {
    display: none;
 }
-#center #capture_pane canvas#canvas{
-   display: none;
-}
 #center #capture_pane img#img{
    width: 350px;
    height: 350px;
